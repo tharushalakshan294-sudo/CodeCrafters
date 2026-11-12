@@ -1,36 +1,25 @@
 package com.codecrafters.babyshop;
 
+import com.codecrafters.babyshop.dao.EmployeeDAO;
+import com.codecrafters.babyshop.dao.ItemDAO;
+import com.codecrafters.babyshop.dao.TransactionDAO;
+import com.codecrafters.babyshop.model.Employee;
+import com.codecrafters.babyshop.model.Item;
+import com.codecrafters.babyshop.model.Txn;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.time.LocalDate;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
-/**
- * UI-only controller. Data is kept in memory for now;
- * replace the lists with DAO / database calls later.
- */
 public class MainController {
 
-    // ---------- simple model classes ----------
-    public static class Item {
-        String code, name, size; int qty; double price;
-        Item(String code, String name, String size, int qty, double price) {
-            this.code = code; this.name = name; this.size = size; this.qty = qty; this.price = price;
-        }
-    }
-    public static class Txn {
-        String date, desc, type; double amount;
-        Txn(String date, String desc, String type, double amount) {
-            this.date = date; this.desc = desc; this.type = type; this.amount = amount;
-        }
-    }
-    public static class Employee {
-        String name, role; double salary; boolean paid;
-        Employee(String name, String role, double salary) { this.name = name; this.role = role; this.salary = salary; }
-    }
+    private final ItemDAO itemDAO = new ItemDAO();
+    private final TransactionDAO txnDAO = new TransactionDAO();
+    private final EmployeeDAO employeeDAO = new EmployeeDAO();
 
     private final ObservableList<Item> items = FXCollections.observableArrayList();
     private final ObservableList<Txn> txns = FXCollections.observableArrayList();
@@ -83,30 +72,40 @@ public class MainController {
         salStatusCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().paid ? "Paid" : "Pending"));
         salaryTable.setItems(employees);
 
-        // Sample data (delete when DB is connected)
-        items.addAll(new Item("B001", "Cotton Onesie", "0-3M", 25, 1250),
-                     new Item("B002", "Baby Frock", "6-12M", 6, 2400),
-                     new Item("B003", "Knitted Cap", "NB", 4, 650));
-        txns.add(new Txn(LocalDate.now().toString(), "Opening balance", "Income", 50000));
-        employees.addAll(new Employee("Nimal Perera", "Cashier", 45000),
-                         new Employee("Kamani Silva", "Sales Assistant", 40000));
+        loadAllData();
+    }
 
-        refreshDashboard();
+    /** Loads everything from the database into the tables. */
+    private void loadAllData() {
+        try {
+            items.setAll(itemDAO.findAll());
+            txns.setAll(txnDAO.findAll());
+            employees.setAll(employeeDAO.findAll());
+            refreshDashboard();
+        } catch (SQLException e) {
+            dbError(e);
+        }
     }
 
     // ================= Inventory actions =================
     @FXML
     private void onAddItem() {
+        if (codeField.getText().isBlank() || nameField.getText().isBlank()) {
+            alert("Please enter item code and name."); return;
+        }
         try {
-            if (codeField.getText().isBlank() || nameField.getText().isBlank()) {
-                alert("Please enter item code and name."); return;
-            }
-            items.add(new Item(codeField.getText().trim(), nameField.getText().trim(), sizeField.getText().trim(),
-                    Integer.parseInt(qtyField.getText().trim()), Double.parseDouble(priceField.getText().trim())));
+            Item item = new Item(codeField.getText().trim(), nameField.getText().trim(), sizeField.getText().trim(),
+                    Integer.parseInt(qtyField.getText().trim()), Double.parseDouble(priceField.getText().trim()));
+            itemDAO.insert(item);
+            items.add(item);
             codeField.clear(); nameField.clear(); sizeField.clear(); qtyField.clear(); priceField.clear();
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Quantity and price must be valid numbers.");
+        } catch (SQLIntegrityConstraintViolationException e) {
+            alert("An item with that code already exists.");
+        } catch (SQLException e) {
+            dbError(e);
         }
     }
 
@@ -118,13 +117,17 @@ public class MainController {
         if (selected == null) { alert("Select an item first."); return; }
         try {
             int amount = Integer.parseInt(qtyField.getText().trim());
-            if (selected.qty + sign * amount < 0) { alert("Not enough stock."); return; }
-            selected.qty += sign * amount;
+            int newQty = selected.qty + sign * amount;
+            if (newQty < 0) { alert("Not enough stock."); return; }
+            itemDAO.updateQty(selected.code, newQty);
+            selected.qty = newQty;
             qtyField.clear();
             inventoryTable.refresh();
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Enter a valid quantity.");
+        } catch (SQLException e) {
+            dbError(e);
         }
     }
 
@@ -132,35 +135,46 @@ public class MainController {
     private void onDeleteItem() {
         Item selected = inventoryTable.getSelectionModel().getSelectedItem();
         if (selected == null) { alert("Select an item first."); return; }
-        items.remove(selected);
-        refreshDashboard();
+        try {
+            itemDAO.delete(selected.code);
+            items.remove(selected);
+            refreshDashboard();
+        } catch (SQLException e) {
+            dbError(e);
+        }
     }
 
     // ================= Transaction actions =================
     @FXML
     private void onAddTransaction() {
+        if (trDescField.getText().isBlank()) { alert("Enter a description."); return; }
         try {
-            if (trDescField.getText().isBlank()) { alert("Enter a description."); return; }
-            txns.add(new Txn(LocalDate.now().toString(), trDescField.getText().trim(),
-                    trTypeBox.getValue(), Double.parseDouble(trAmountField.getText().trim())));
+            Txn t = txnDAO.insert(trDescField.getText().trim(), trTypeBox.getValue(),
+                    Double.parseDouble(trAmountField.getText().trim()));
+            txns.add(0, t);
             trDescField.clear(); trAmountField.clear();
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Amount must be a valid number.");
+        } catch (SQLException e) {
+            dbError(e);
         }
     }
 
     // ================= Salary actions =================
     @FXML
     private void onAddEmployee() {
+        if (salNameField.getText().isBlank()) { alert("Enter employee name."); return; }
         try {
-            if (salNameField.getText().isBlank()) { alert("Enter employee name."); return; }
-            employees.add(new Employee(salNameField.getText().trim(), salRoleField.getText().trim(),
-                    Double.parseDouble(salAmountField.getText().trim())));
+            Employee emp = employeeDAO.insert(salNameField.getText().trim(), salRoleField.getText().trim(),
+                    Double.parseDouble(salAmountField.getText().trim()));
+            employees.add(emp);
             salNameField.clear(); salRoleField.clear(); salAmountField.clear();
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Salary must be a valid number.");
+        } catch (SQLException e) {
+            dbError(e);
         }
     }
 
@@ -169,17 +183,20 @@ public class MainController {
         Employee e = salaryTable.getSelectionModel().getSelectedItem();
         if (e == null) { alert("Select an employee first."); return; }
         if (e.paid) { alert(e.name + " is already paid."); return; }
-        e.paid = true;
-        // paying a salary is also an expense transaction
-        txns.add(new Txn(LocalDate.now().toString(), "Salary - " + e.name, "Expense", e.salary));
-        salaryTable.refresh();
-        refreshDashboard();
+        try {
+            Txn expense = employeeDAO.paySalary(e);   // marks paid + records expense atomically
+            e.paid = true;
+            txns.add(0, expense);
+            salaryTable.refresh();
+            refreshDashboard();
+        } catch (SQLException ex) {
+            dbError(ex);
+        }
     }
 
     // ================= Dashboard =================
     private void refreshDashboard() {
-        int total = items.stream().mapToInt(i -> i.qty).sum();
-        totalItemsLabel.setText(String.valueOf(total));
+        totalItemsLabel.setText(String.valueOf(items.stream().mapToInt(i -> i.qty).sum()));
 
         lowStockList.getItems().clear();
         items.stream().filter(i -> i.qty < 10)
@@ -196,5 +213,9 @@ public class MainController {
 
     private void alert(String msg) {
         new Alert(Alert.AlertType.WARNING, msg).showAndWait();
+    }
+
+    private void dbError(SQLException e) {
+        new Alert(Alert.AlertType.ERROR, "Database error:\n" + e.getMessage()).showAndWait();
     }
 }
