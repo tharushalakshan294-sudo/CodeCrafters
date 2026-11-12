@@ -1,5 +1,5 @@
 package com.codecrafters.babyshop;
-
+import java.sql.SQLIntegrityConstraintViolationException;
 import com.codecrafters.babyshop.dao.EmployeeDAO;
 import com.codecrafters.babyshop.dao.ItemDAO;
 import com.codecrafters.babyshop.dao.TransactionDAO;
@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 
 public class MainController {
 

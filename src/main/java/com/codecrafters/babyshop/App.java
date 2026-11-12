@@ -26,11 +26,34 @@ public class App extends Application {
             return;
         }
 
-        // TODO (last step): load login.fxml first, then switch to main.fxml after login
-        Parent root = FXMLLoader.load(App.class.getResource("main.fxml"));
-        stage.setScene(new Scene(root, 1150, 720));
-        stage.setTitle("Baby Clothing Shop - Management System");
-        stage.show();
+        showLogin(stage);
+    }
+
+    /** Login / Register screen (shown first). */
+    public static void showLogin(Stage stage) {
+        try {
+            Parent root = FXMLLoader.load(App.class.getResource("login.fxml"));
+            stage.setScene(new Scene(root, 900, 620));
+            stage.setTitle("Baby Clothing Shop - Login");
+            stage.setResizable(false);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** Main management screen (shown after a successful login). */
+    public static void showMain(Stage stage) {
+        try {
+            Parent root = FXMLLoader.load(App.class.getResource("main.fxml"));
+            stage.setResizable(true);
+            stage.setScene(new Scene(root, 1150, 720));
+            stage.setTitle("Baby Clothing Shop - Management System");
+            stage.centerOnScreen();
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Cannot open main screen:\n" + e.getMessage()).showAndWait();
+        }
     }
 
     public static void main(String[] args) {
