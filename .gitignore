@@ -1,12 +1,6 @@
-src/main/resources/db.properties
-src/main/resources/db.properties
-src/main/resources/db.properties
-.idea/
-*.iml
 target/
+.idea/
+.vscode/
+*.iml
 *.class
 src/main/resources/db.properties
-.idea/
-*.iml
-target/
-*.class
