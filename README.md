@@ -409,7 +409,10 @@ Add CSV export for monthly sales report
 ## 📄 Documentation
 
 - 📘 [Software Requirements Specification (SRS)](docs/SRS_Document.pdf)
-- 📐 UML Class Diagram: `docs/` *(to be added)*
+- 📐 UML Class Diagram: [Class diagram](docs/diagrams/Class%20diagram)
+- 👤 Use Case Diagram: [Use case diagram](docs/diagrams/Use%20case%20diagram)
+- 🔄 Activity Diagrams: [Activity diagram](docs/diagrams/Activity%20diagram)
+- 🔁 Sequence Diagrams: [Sequence diagram](docs/diagrams/Sequence%20diagram)
 - 🗂️ ER Diagram: `docs/` *(to be added)*
 
 ---
