@@ -413,7 +413,7 @@ Add CSV export for monthly sales report
 - 👤 Use Case Diagram: [Use case diagram](docs/diagrams/Use%20case%20diagram)
 - 🔄 Activity Diagrams: [Activity diagram](docs/diagrams/Activity%20diagram)
 - 🔁 Sequence Diagrams: [Sequence diagram](docs/diagrams/Sequence%20diagram)
-- 🗂️ ER Diagram: `docs/` *(to be added)*
+- 🗂️ ER Diagram: [Er-diagram.png](docs/diagrams/Er-diagram.png)
 
 ---
 
