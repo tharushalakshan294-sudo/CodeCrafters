@@ -1,15 +1,16 @@
-# CodeCrafters
-# 👕 Clothing Shop Business Management System
+# 👶 CodeCrafters –Bloom Baby shop Management System
 
-> A Java, OOP-based business management application for a children's clothing shop in Maharagama, Sri Lanka.
+> A JavaFX + MySQL desktop application that manages inventory, income/expenses and employee salaries for a children's clothing shop in Maharagama, Sri Lanka.
 
-**Team CodeCrafters** | Object Oriented Programming | Group Assignment
-Faculty of Technology, University of Sri Jayewardenepura
+**Team CodeCrafters** | IIC 1153 – Object Oriented Programming | Group Assignment  
+Faculty of Technology, University of Sri Jayewardenepura  
 Bachelor of Information and Communication Technology Honours Degree – First Year, Second Semester
 
 ![Java](https://img.shields.io/badge/Java-17+-orange)
-![Database](https://img.shields.io/badge/Database-SQLite-blue)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![JavaFX](https://img.shields.io/badge/UI-JavaFX%2021-blueviolet)
+![Database](https://img.shields.io/badge/Database-MySQL-blue)
+![Build](https://img.shields.io/badge/Build-Maven-red)
+![Status](https://img.shields.io/badge/Status-Development%20Finished-brightgreen)
 ![License](https://img.shields.io/badge/Use-Academic-lightgrey)
 
 ---
@@ -18,35 +19,35 @@ Bachelor of Information and Communication Technology Honours Degree – First Ye
 
 1. [Project Overview](#-project-overview)
 2. [Problem Statement](#-problem-statement)
-3. [Objectives](#-objectives)
-4. [Features](#-features)
-5. [Scope](#-scope)
-6. [OOP Concepts Applied](#-oop-concepts-applied)
-7. [System Architecture](#-system-architecture)
-8. [Project Structure](#-project-structure)
-9. [Database Design](#-database-design)
-10. [Tech Stack](#-tech-stack)
-11. [Getting Started](#-getting-started)
-12. [User Roles](#-user-roles)
-13. [File Handling](#-file-handling)
-14. [Exception Handling](#-exception-handling)
-15. [Git Workflow](#-git-workflow)
-16. [Team Members](#-team-members)
-17. [Project Progress](#-project-progress)
-18. [Documentation](#-documentation)
-19. [Future Enhancements](#-future-enhancements)
-20. [Acknowledgements](#-acknowledgements)
+3. [Current Features](#-current-features)
+4. [Scope](#-scope)
+5. [OOP Concepts Applied](#-oop-concepts-applied)
+6. [System Architecture](#-system-architecture)
+7. [Project Structure](#-project-structure)
+8. [Database Design](#-database-design)
+9. [Tech Stack](#-tech-stack)
+10. [Getting Started](#-getting-started)
+11. [Using the Application](#-using-the-application)
+12. [Security](#-security)
+13. [Exception Handling](#-exception-handling)
+14. [Git Workflow](#-git-workflow)
+15. [Team Members](#-team-members)
+16. [Project Progress](#-project-progress)
+17. [Documentation](#-documentation)
+18. [Future Enhancements](#-future-enhancements)
+19. [Acknowledgements](#-acknowledgements)
+20. [Submission](#-submission)
 
 ---
 
 ## 📌 Project Overview
 
-This project was developed for a local clothing shop in **Maharagama, Sri Lanka**, owned by **Mr. Amila Buddika**. The shop sells clothing for **boys and girls up to 12 years of age** and serves both:
+This project was developed for a local clothing shop in **Maharagama, Sri Lanka**, owned by **Mr. Amila Buddika**. The shop sells clothing for babies and children, and serves both:
 
 - **B2B (wholesale)** customers, who are other businesses buying in bulk
 - **B2C (retail)** customers, who are individual buyers
 
-The system replaces the shop's manual processes with a centralized, database-backed Java application that manages billing, inventory, employee salaries, expenses, and business profitability.
+The application replaces manual record keeping with a single desktop program backed by a MySQL database. After logging in, the shop owner can track stock, record income and expenses, pay employee salaries, and see a live dashboard of the shop's position.
 
 ---
 
@@ -56,94 +57,65 @@ Based on our client interview, the shop currently faces these problems:
 
 | Problem | Impact |
 |---|---|
-| Manual billing | Slow, error-prone, and hard to trace |
 | No consistent inventory records | Stock shortages and overstocking go unnoticed |
+| Manual monthly salary tracking | Calculation errors, no history |
+| Income and expenses not recorded in one place | Real costs remain hidden |
+| No clear view of the shop's balance | The owner cannot see actual financial standing |
 | Separate wholesale and retail prices handled by hand | Pricing mistakes |
-| Manual monthly salary calculation | Calculation errors, no history |
-| Transportation and other expenses not recorded | Real costs remain hidden |
-| No clear profit calculation | The owner cannot see actual profitability |
 
-**Our solution:** one integrated application that automates these operations and gives the owner accurate financial insight.
+**Our solution:** one integrated application that digitizes these operations and gives the owner an at-a-glance dashboard.
 
 ---
 
-## 🎯 Objectives
+## ✨ Current Features
 
-1. Replace manual billing with a computerized billing system.
-2. Support both B2B wholesale and B2C retail sales with separate prices.
-3. Maintain accurate, up-to-date inventory records.
-4. Automate monthly employee salary calculation.
-5. Record transportation costs (stock collection and customer delivery) and other business expenses.
-6. Track product purchasing costs.
-7. Calculate revenue, gross profit, and estimated net profit.
-8. Generate useful reports for the shop owner.
-9. Store business data securely and persistently.
+### 🔐 Login and Registration
+- Register a new account (username, password, full name, optional email / phone / address)
+- Log in with username and password
+- Input validation (required fields, password length of at least 6, matching passwords, email format, duplicate usernames)
+- Passwords are stored **salted and hashed** (PBKDF2)
 
----
+### 📊 Dashboard
+- Total number of items in stock
+- Number of low-stock items (quantity below 10) with a list of what is running low
+- Net balance (income minus expenses)
+- Total salaries still pending
 
-## ✨ Features
+### 📦 Inventory / Stock Management
+- Add new items with code, name, size, quantity and price
+- Increase or reduce stock for a selected item
+- Delete items
+- Reducing stock below zero is blocked with an `InsufficientStockException`
+- Duplicate item codes are rejected
 
-### 📦 Product and Inventory Management
-- Register, update, search, and deactivate products
-- Support for categories (Boys / Girls), sizes, and colours
-- Separate wholesale and retail selling prices per product
-- Stock receiving with quantity, date, and purchase cost
-- Automatic stock reduction after each sale
-- Low-stock notifications at a defined minimum level
-- Stock history of additions and reductions
+### 💰 Transactions (Income / Expense)
+- Record income and expense transactions with a description and amount (dated automatically)
+- Full transaction history, newest first
+- **Export CSV Report** of all transactions to a location you choose
 
-### 🧾 Billing and Sales
-- Create sales with multiple products in one transaction
-- Choose transaction type (B2B or B2C); the correct price is applied automatically
-- Automatic subtotal and total calculation
-- Unique invoice number and timestamp per sale
-- Sales blocked if requested quantity exceeds available stock
-- Retrieve previous invoices and sales records
-- Separate B2B and B2C sales summaries
+### 👥 Salary Payments
+- Add employees with name, role and monthly salary
+- Mark a salary as **Paid** or **Pending**
+- Paying a salary automatically records a matching **Expense** transaction; both steps happen in a single database transaction, so either both succeed or neither does
 
-### 👥 Employee and Salary Management
-- Register, update, and deactivate employees
-- Fixed monthly salary with allowances and deductions
-- Automatic gross and net salary calculation
-- Monthly salary payment records and summaries
-
-### 🚚 Expense Management
-- Transportation expenses (stock collection and customer delivery)
-- Other business expenses (rent, electricity, water, communication, etc.)
-- Totals by period and by category
-- Full expense history
-
-### 💰 Profit and Financial Management
-- Total sales revenue for any period
-- Cost of goods sold (COGS) from recorded purchase costs
-- Gross profit = Revenue − COGS
-- Estimated net profit = Gross profit − Operating expenses
-- Separate B2B and B2C financial performance
-- Rules designed to avoid double-counting costs
-
-### 📊 Reports
-- Daily and monthly sales reports
-- Inventory and low-stock reports
-- Salary, transportation, and expense reports
-- Revenue and profit summaries
-- Date-range selection
-
-### 🔐 Authentication and Access Control
-- Login and logout with credentials
-- Passwords stored as hashes
-- Salary and financial data restricted to the Owner
+### 🧮 Pricing Logic (service layer)
+- `RetailPricing`: unit price × quantity
+- `WholesalePricing`: 10% discount on orders of 10 or more items
+- `PricingCalculator` picks the strategy based on the customer type
+- *This logic is implemented and demonstrates polymorphism, but it is not yet connected to a billing screen.*
 
 ---
 
 ## 📐 Scope
 
-### ✅ In Scope (Initial Version)
-Billing and invoices, B2B/B2C pricing, product and inventory management, employee and salary management, expense recording, purchase cost management, profit calculation, daily and monthly reports, and persistent storage.
+### ✅ Implemented
+Login and registration, inventory management, low-stock alerts, income/expense transactions, employee salary payments, dashboard summary, CSV export of transactions, and persistent MySQL storage.
+
+### 🛠️ Planned (see [Project Progress](#-project-progress))
+Billing and invoices with B2B/B2C pricing in the UI, purchase cost tracking, profit calculation, and richer reports.
 
 ### ❌ Out of Scope
 Online shopping, online payment gateways, mobile app, supplier portal, bank integration, automated tax filing, attendance and leave management, and multi-branch management.
-
-> 📝 Some advanced modules are planned for future phases (see [Future Enhancements](#-future-enhancements)).
 
 ---
 
@@ -151,58 +123,68 @@ Online shopping, online payment gateways, mobile app, supplier portal, bank inte
 
 | Concept | Where it is used in this project |
 |---|---|
-| **Encapsulation** | Private fields with getters/setters and validation in all model classes (for example, no negative prices or quantities) |
-| **Abstraction** | `abstract class Person` and `abstract class Expense` define shared structure and contracts |
-| **Inheritance** | `Employee extends Person`, `TransportExpense` / `BusinessExpense extends Expense`, `Owner` / `Staff extends User` |
-| **Polymorphism** | `PricingStrategy` interface with `WholesalePricing` and `RetailPricing`; overridden methods such as `calculateAmount()` |
-| **Exception Handling** | Custom exceptions plus try-catch-finally across the service and UI layers |
-| **Collections & Generics** | `ArrayList`, `HashMap`, and a generic `Repository<T>` interface |
-| **File Handling** | Invoice files, CSV report export, error logs, configuration, database backup |
-| **Interfaces & Packages** | `Repository<T>`, `Payable`, `Reportable`, `PricingStrategy`; code organized into packages |
+| **Encapsulation** | Private fields with controlled accessors and validation in `Item`, `Employee`, `Txn` and `Person` (for example, no negative prices, quantities, salaries or amounts) |
+| **Abstraction** | `abstract class Person` defines shared structure and an abstract `getRole()` |
+| **Inheritance** | `Employee extends Person`, `Customer extends Person`, `InsufficientStockException extends BabyShopException` |
+| **Polymorphism** | `PricingStrategy` interface with `RetailPricing` and `WholesalePricing`, chosen at runtime by `PricingCalculator`; overridden `getRole()` in subclasses |
+| **Method Overloading** | `PricingCalculator.calculate(item, quantity)` and `calculate(item, quantity, customer)` |
+| **Interfaces & Generics** | Generic `Repository<T>` interface implemented by `ItemDAO`, `EmployeeDAO` and `TransactionDAO` |
+| **Exception Handling** | Custom checked exceptions (`BabyShopException`, `InsufficientStockException`), plus try-catch and try-with-resources throughout the DAO and controller classes |
+| **Collections** | `ObservableList`, `ArrayList` and streams for tables, dashboard totals and low-stock lists |
+| **File Handling** | CSV export through `CsvExporter` using `BufferedWriter` and try-with-resources |
+| **Packages** | Code organized into `model`, `dao`, `service`, `db`, `exception` and `util` |
 
 ---
 
 ## 🏗️ System Architecture
 
-The system follows a **layered architecture**:
+The application follows a layered structure:
 
 ```
-┌──────────────────────────────┐
-│     UI Layer (ui)            │  ← user interaction
-├──────────────────────────────┤
-│     Service Layer (service)  │  ← business rules
-├──────────────────────────────┤
-│     Repository Layer         │  ← data access
-├──────────────────────────────┤
-│     Database / Files         │  ← persistent storage
-└──────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│  UI Layer        FXML views + Controllers    │  ← login.fxml, main.fxml,
+│                  (JavaFX)                    │    LoginController, MainController
+├──────────────────────────────────────────────┤
+│  Service Layer   Business rules              │  ← InventoryService,
+│                                              │    PricingCalculator + strategies
+├──────────────────────────────────────────────┤
+│  DAO Layer       Data access (JDBC)          │  ← ItemDAO, EmployeeDAO,
+│                                              │    TransactionDAO, UserDAO
+├──────────────────────────────────────────────┤
+│  Database        MySQL (DBConnection)        │
+└──────────────────────────────────────────────┘
 ```
 
-Each layer talks only to the layer directly below it, which keeps the code organized, reusable, and easy to maintain.
+> Note: `MainController` currently calls the DAOs directly for most actions and uses `InventoryService` for stock calculations. Moving more business rules into the service layer is a planned improvement.
 
 ---
 
 ## 📂 Project Structure
 
 ```
-clothing-shop-management-system/
+CodeCrafters/
 │
-├── docs/                         # SRS, UML diagrams, ER diagram
-├── src/
-│   └── com/clothingshop/
-│       ├── model/                # Product, Sale, SaleItem, Employee, User, Expense...
-│       ├── interfaces/           # Repository<T>, Payable, Reportable
-│       ├── pricing/              # PricingStrategy, WholesalePricing, RetailPricing
-│       ├── exception/            # Custom exception classes
-│       ├── repository/           # Database and file access classes
-│       ├── service/              # BillingService, InventoryService, SalaryService, ProfitService
-│       ├── util/                 # FileUtil, Validator, Logger
-│       ├── ui/                   # User interface screens
-│       └── Main.java             # Application entry point
-│
-├── data/                         # Database file, backups (git-ignored)
-├── output/                       # Generated invoices and reports (git-ignored)
-├── logs/                         # Error logs (git-ignored)
+├── .github/workflows/blank.yml        # Placeholder CI workflow
+├── docs/
+│   └── diagrams/                      # Use case, class, ER, activity and sequence diagrams (PNG)
+├── src/main/
+│   ├── java/com/codecrafters/babyshop/
+│   │   ├── App.java                   # Application entry point (JavaFX)
+│   │   ├── LoginController.java       # Login / register screen logic
+│   │   ├── MainController.java        # Dashboard, inventory, transactions, salaries
+│   │   ├── dao/                       # Repository<T>, ItemDAO, EmployeeDAO, TransactionDAO, UserDAO
+│   │   ├── db/                        # DBConnection (connection + table creation)
+│   │   ├── exception/                 # BabyShopException, InsufficientStockException
+│   │   ├── model/                     # Person, Employee, Customer, Item, Txn
+│   │   ├── service/                   # InventoryService, PricingStrategy, RetailPricing,
+│   │   │                              # WholesalePricing, PricingCalculator
+│   │   └── util/                      # CsvExporter
+│   └── resources/
+│       ├── com/codecrafters/babyshop/ # login.fxml, main.fxml
+│       └── db.properties              # Database connection settings
+├── schema.sql                         # Reference SQL schema
+├── pom.xml                            # Maven build file
+├── RUN_GUIDE_WINDOWS.txt              # Detailed Windows setup guide
 ├── .gitignore
 └── README.md
 ```
@@ -211,23 +193,17 @@ clothing-shop-management-system/
 
 ## 🗄️ Database Design
 
-Main entities (from the SRS):
+Database name: **`babyshop`** (MySQL). Tables are created automatically on first run by `DBConnection.init()`; `schema.sql` contains the same definitions for reference.
 
-| Entity | Key information |
+| Table | Columns |
 |---|---|
-| **Product** | Product ID, name, category, size, colour, purchase cost, wholesale price, retail price |
-| **Inventory** | Stock ID, product ID, available quantity, minimum stock level |
-| **Customer** | Customer ID, name, contact details, customer type |
-| **Sale** | Sale ID, invoice number, date, customer type, total amount |
-| **Sale Item** | Sale item ID, sale ID, product ID, quantity, unit selling price |
-| **Employee** | Employee ID, name, contact details, job role, monthly salary |
-| **Salary** | Salary ID, employee ID, pay period, basic salary, allowances, deductions, net salary |
-| **Transportation Expense** | Expense ID, date, purpose, description, amount |
-| **Business Expense** | Expense ID, date, category, description, amount |
-| **Product Purchase** | Purchase ID, product ID, purchase date, quantity, unit cost, total cost |
-| **User** | User ID, username, password hash, role |
+| **item** | `code` (PK), `name`, `size`, `qty`, `price` |
+| **transactions** | `id` (PK, auto), `date`, `description`, `type` (Income / Expense), `amount` |
+| **employee** | `id` (PK, auto), `name`, `role`, `salary`, `paid` |
+| **users** | `user_id` (PK, auto), `username` (unique), `password` (salted hash) |
+| **user_details** | `detail_id` (PK, auto), `user_id` (FK → users, cascade), `full_name`, `email`, `phone`, `address` |
 
-📎 The full ER diagram is available in the [`docs/`](docs/) folder.
+📎 The ER diagram is in [`docs/diagrams/Er-diagram.png`](docs/diagrams/Er-diagram.png).
 
 ---
 
@@ -235,10 +211,11 @@ Main entities (from the SRS):
 
 | Area | Technology |
 |---|---|
-| Language | Java (JDK 17 or higher) |
-| Database | SQLite via JDBC |
-| User interface | Java Swing *(update if you choose JavaFX or console)* |
-| Build / IDE | IntelliJ IDEA / Eclipse / NetBeans |
+| Language | Java 17+ |
+| UI | JavaFX 21.0.2 (FXML) with the [AtlantaFX](https://github.com/mkpaz/atlantafx) `PrimerLight` theme |
+| Database | MySQL via `mysql-connector-j` 8.4.0 (JDBC) |
+| Build tool | Maven (with `javafx-maven-plugin` 0.0.8) |
+| IDE | IntelliJ IDEA |
 | Version control | Git and GitHub |
 | Diagrams | draw.io |
 
@@ -247,85 +224,97 @@ Main entities (from the SRS):
 ## 🚀 Getting Started
 
 ### Prerequisites
-- JDK 17 or higher installed
-- Git installed
-- An IDE (IntelliJ IDEA, Eclipse, or NetBeans)
-- SQLite JDBC driver (`sqlite-jdbc`)
+- JDK 17 or newer
+- Maven (bundled with IntelliJ IDEA)
+- MySQL Server running locally (or WAMP/XAMPP with the MySQL service started; Apache/PHP is not needed)
+- Git
+- Internet access on the first build so Maven can download dependencies
 
 ### Installation
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/<your-username>/<repository-name>.git
+git clone https://github.com/<your-username>/CodeCrafters.git
 
 # 2. Move into the project folder
-cd <repository-name>
-
-# 3. Switch to the development branch
-git checkout develop
+cd CodeCrafters
 ```
 
-### Running the application
+### Configure the database
 
-1. Open the project in your IDE.
-2. Add the `sqlite-jdbc` library to the project classpath.
-3. Run `Main.java` located in `com.clothingshop`.
-4. On the first run, the database and default tables are created automatically.
+1. Make sure the MySQL service is running.
+2. Optionally create a database named `babyshop` (the default JDBC URL also creates it automatically with `createDatabaseIfNotExist=true`).
+3. Open `src/main/resources/db.properties` and check the values:
 
-### Default login (for testing only)
+```properties
+db.url=jdbc:mysql://localhost:3306/babyshop?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+db.user=root
+db.password=
+```
 
-| Role | Username | Password |
-|---|---|---|
-| Owner | `owner` | `owner123` |
-| Staff | `staff` | `staff123` |
+Change `db.user`, `db.password` or the port to match your local MySQL setup.
 
-> ⚠️ Change these credentials in a real deployment. Replace this table with your own seeded accounts.
+> `db.properties` is listed in `.gitignore`, so each team member keeps their own local credentials. Do not commit real passwords.
+
+### Run the application
+
+**Option A – IntelliJ IDEA**
+1. Open the project folder (the one containing `pom.xml`) as a Maven project and wait for dependencies to download.
+2. Run `src/main/java/com/codecrafters/babyshop/App.java`.
+
+**Option B – Maven**
+```bash
+mvn javafx:run
+```
+(or use *Maven tool window → Plugins → javafx → javafx:run* in IntelliJ).
+
+For step-by-step Windows instructions and troubleshooting, see [`RUN_GUIDE_WINDOWS.txt`](RUN_GUIDE_WINDOWS.txt).
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| "Cannot connect to the database" | Confirm the MySQL service is running |
+| "Access denied" | Correct `db.user` / `db.password` in `db.properties` |
+| "Communications link failure" | Check the MySQL port (default 3306) in `db.url` |
+| Maven dependency errors | Check your internet connection and reload the Maven project |
+| JavaFX runtime errors | Use JDK 17+ and launch through `javafx:run` or IntelliJ's Maven integration |
 
 ---
 
-## 👤 User Roles
+## 🖥️ Using the Application
 
-| Feature | Owner | Staff |
-|---|:---:|:---:|
-| Billing and invoices | ✅ | ✅ |
-| Product search and stock view | ✅ | ✅ |
-| Add / update products | ✅ | Limited |
-| Register stock and purchases | ✅ | ❌ |
-| Employee and salary management | ✅ | ❌ |
-| Expense recording | ✅ | ❌ |
-| Profit and financial reports | ✅ | ❌ |
-| Backup and restore | ✅ | ❌ |
+1. **Register** a new account on the first screen, then **log in**. There are no pre-seeded default accounts.
+2. **Dashboard** – view stock totals, low-stock alerts, net balance and pending salaries.
+3. **Inventory** – add items; select a row, enter a quantity, then use **+ Add Stock** or **- Reduce Stock**; delete items you no longer sell.
+4. **Transactions (Income / Expense)** – record money in or out; use **Export CSV Report** to save the history as a `.csv` file.
+5. **Salary Payments** – add employees and use **Mark Selected as Paid**, which also creates the matching expense entry.
 
-> The final permissions will be confirmed with the client.
+All amounts are shown in Sri Lankan rupees (Rs.).
 
 ---
 
-## 📁 File Handling
+## 🔒 Security
 
-| Purpose | File type | Location |
-|---|---|---|
-| Invoices | `.txt` | `output/invoices/` |
-| Report export | `.csv` | `output/reports/` |
-| Error and activity log | `.log` | `logs/` |
-| Application configuration | `.properties` | project root |
-| Database backup | `.db` copy | `data/backups/` |
+- Passwords are never stored in plain text. They are hashed with **PBKDF2-HMAC-SHA256** (65,536 iterations, 16-byte random salt per user) and verified with a constant-time comparison.
+- All database queries that take user input use **prepared statements**.
+- Multi-step writes (registering a user, paying a salary) run inside database transactions with rollback on failure.
+- Role-based access control (Owner / Staff) is **not yet implemented**; every logged-in user currently sees all tabs.
 
 ---
 
 ## ⚠️ Exception Handling
 
-Custom exceptions keep error handling clear and consistent:
-
-| Exception | When it is thrown |
+| Exception / mechanism | When it is used |
 |---|---|
-| `InsufficientStockException` | Requested quantity exceeds available stock |
-| `InvalidInputException` | Invalid, empty, or negative input values |
-| `DuplicateRecordException` | A duplicate product ID, username, or similar |
-| `RecordNotFoundException` | A requested record does not exist |
-| `AuthenticationException` | Wrong username or password |
-| `UnauthorizedAccessException` | A user tries to access a restricted function |
+| `InsufficientStockException` (extends `BabyShopException`) | A stock reduction would take the quantity below zero |
+| `IllegalArgumentException` | Negative or invalid values in `Item`, `Employee`, `Txn` and `Person`, or a quantity of zero or less |
+| `NumberFormatException` | Non-numeric text entered for quantity, price, amount or salary |
+| `SQLIntegrityConstraintViolationException` | Duplicate item code or username |
+| `SQLException` | Database connection or query problems (shown in an error dialog) |
+| `IOException` | CSV export failures |
 
-The application shows clear messages to the user and writes errors to the log file instead of crashing.
+The application shows clear alert messages to the user instead of crashing.
 
 ---
 
@@ -335,7 +324,7 @@ The application shows clear messages to the user and writes errors to the log fi
 
 | Branch | Purpose |
 |---|---|
-| `main` | Stable, final version (protected) |
+| `main` | Stable, final version |
 | `develop` | Integration of completed features |
 | `feature/<name>` | Individual feature work (for example `feature/billing`) |
 
@@ -349,26 +338,17 @@ git checkout -b feature/billing
 # ...write code...
 
 git add .
-git commit -m "Add BillingService with wholesale/retail price selection"
+git commit -m "Add billing screen using PricingCalculator"
 git push -u origin feature/billing
 ```
 
 Then open a **Pull Request** into `develop`, request a teammate's review, and merge after approval.
 
 ### Rules
-- Never commit directly to `main` or `develop`.
+- Avoid committing directly to `main` or `develop`.
 - Pull from `develop` regularly to avoid conflicts.
 - Write clear, descriptive commit messages.
-- Link commits and pull requests to issues (for example `Closes #5`).
-
-### Commit message examples
-
-```
-Add Product model with validation
-Implement InsufficientStockException
-Fix total calculation in BillingService
-Add CSV export for monthly sales report
-```
+- Never commit `db.properties` with real credentials (it is git-ignored).
 
 ---
 
@@ -378,51 +358,62 @@ Add CSV export for monthly sales report
 
 | Name | Student ID | GitHub | Responsibility |
 |---|---|---|---|
-| Member 1 | | @username | Product, Inventory and Purchase |
-| Member 2 | | @username | Billing and B2B/B2C Pricing |
-| Member 3 | | @username | Employee, Salary and Login |
-| Member 4 | | @username | Expenses, Profit, Reports and Exceptions |
-| Member 5 | | @username | Database layer, Git management and Documentation |
+| Member 1 | | @username | |
+| Member 2 | | @username | |
+| Member 3 | | @username | |
+| Member 4 | | @username | |
+| Member 5 | | @username | |
 
 ---
 
 ## ✅ Project Progress
 
 - [x] Client interview and requirement gathering
-- [x] Software Requirements Specification (SRS)
 - [x] GitHub repository setup
-- [ ] UML class diagram and ER diagram
-- [ ] Custom exceptions and base classes
-- [ ] Model classes
-- [ ] Database and repository layer
-- [ ] Product and inventory module
-- [ ] Billing and pricing module
-- [ ] Employee and salary module
-- [ ] Expense and profit module
-- [ ] Reports and file handling
-- [ ] Login and role-based access
-- [ ] Testing and bug fixing
+- [x] UML, ER, activity and sequence diagrams
+- [x] Model classes (`Person`, `Employee`, `Customer`, `Item`, `Txn`)
+- [x] Custom exception hierarchy
+- [x] Database and DAO layer (MySQL)
+- [x] Login and registration with hashed passwords
+- [x] Inventory and low-stock dashboard
+- [x] Income / expense transactions
+- [x] Salary payment module
+- [x] CSV export of transactions
+- [x] Pricing strategies (retail / wholesale)
+- [ ] Billing screen with multi-item sales and invoices (B2B / B2C)
+- [ ] Purchase cost tracking and profit calculation
+- [ ] Additional reports (sales, inventory, salary)
+- [ ] Role-based access (Owner / Staff)
+- [ ] Automated tests and a real CI build
 - [ ] Presentation and viva preparation
 
 ---
 
 ## 📄 Documentation
 
-- 📘 [Software Requirements Specification (SRS)](docs/SRS_Document.pdf)
-- 📐 UML Class Diagram: `docs/` *(to be added)*
-- 🗂️ ER Diagram: `docs/` *(to be added)*
+All diagrams are in [`docs/diagrams/`](docs/diagrams/):
+
+- 🎭 Use case diagram: `Use case diagram/use-case-diagram.png`
+- 📐 Class diagram: `Class diagram/class-diagram.png`
+- 🗂️ ER diagram: `Er-diagram.png`
+- 🔄 Activity diagrams: `Activity diagram/` (Create Sale, Receive Stock, Monthly Salary)
+- ⏱️ Sequence diagrams: `Sequence diagram/` (Create Sale, Receive Stock, Monthly Salary)
+- 🪟 Windows setup guide: [`RUN_GUIDE_WINDOWS.txt`](RUN_GUIDE_WINDOWS.txt)
+
+> The Software Requirements Specification (SRS) is not included in this repository yet. Add it to `docs/` and link it here.
 
 ---
 
 ## 🔮 Future Enhancements
 
-- Dashboard with charts
-- Automatic database backup scheduling
+- Full billing module with invoice numbers and printable invoices
+- Wholesale / retail pricing wired into the sales screen
+- Purchase cost tracking, COGS and profit reports
+- Owner / Staff roles with restricted access
+- Dashboard charts
+- Automatic database backups
 - Barcode scanning for products
 - Attendance and leave management
-- Mobile application
-- Online ordering and payment integration
-- Multi-branch support
 
 ---
 
@@ -430,6 +421,7 @@ Add CSV export for monthly sales report
 
 - **Mr. Amila Buddika**, the client, for his time and valuable input during the requirement-gathering interview
 - Lecturers and instructors of **IIC 1153 – Object Oriented Programming**, Faculty of Technology, University of Sri Jayewardenepura
+- [AtlantaFX](https://github.com/mkpaz/atlantafx) for the JavaFX theme
 
 ---
 
@@ -443,29 +435,3 @@ Add CSV export for monthly sales report
 ---
 
 <p align="center">Made with ☕ and Java by <b>Team CodeCrafters</b></p>
-
-
-
-## Updated OOP implementation
-
-The code now includes:
-- Encapsulation in `Item`, `Employee` and `Txn` using private fields and controlled accessors.
-- Abstraction and inheritance through abstract `Person`, with `Employee` and `Customer` subclasses.
-- Runtime polymorphism through `PricingStrategy`, `RetailPricing` and `WholesalePricing`.
-- Method overloading in `PricingCalculator.calculate(...)`.
-- Generic interface `Repository<T>`, implemented by the item, employee and transaction DAO classes.
-- A custom checked exception hierarchy for stock validation.
-- Collections (`ObservableList`, `ArrayList`, streams) and CSV file export using try-with-resources.
-
-## Run on Windows (IntelliJ IDEA)
-
-1. Install JDK 17 or newer.
-2. Install MySQL Server and start the MySQL service.
-3. Open MySQL Workbench or phpMyAdmin and create a database named `babyshop` (or keep `createDatabaseIfNotExist=true` in the JDBC URL).
-4. Open this folder in IntelliJ IDEA as a Maven project and wait for dependencies to download.
-5. Open `src/main/resources/db.properties` and set the correct MySQL username and password.
-6. Run `src/main/java/com/codecrafters/babyshop/App.java`, or open the IntelliJ Maven tool window and run `Plugins > javafx > javafx:run`.
-7. Register a new account on the first screen, then log in.
-8. Use Inventory, Transactions and Salaries tabs. In Transactions, select **Export CSV Report** to save a CSV file.
-
-If the database connection fails, check that MySQL is running, port 3306 is available, and the credentials in `db.properties` are correct.
