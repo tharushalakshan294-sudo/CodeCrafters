@@ -1,0 +1,61 @@
+CODECRAFTERS BABYSHOP - WINDOWS RUN GUIDE
+========================================
+
+REQUIREMENTS
+1. JDK 17 (or newer).
+2. IntelliJ IDEA Community Edition.
+3. MySQL Server, or WAMP with its MySQL/MariaDB service enabled.
+4. Internet access on the first Maven run so Maven can download JavaFX and MySQL libraries.
+
+STEP 1 - START THE DATABASE
+1. Open WAMP and wait until its icon indicates the services are running.
+2. Make sure the MySQL service is started (Apache alone is not enough).
+3. Open phpMyAdmin in your browser.
+4. Create a database named: babyshop
+
+STEP 2 - CHECK DATABASE SETTINGS
+1. In IntelliJ, open:
+   src/main/resources/db.properties
+2. Check these values:
+   db.url=jdbc:mysql://localhost:3306/babyshop?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+   db.user=root
+   db.password=
+3. Change db.user and db.password if your local MySQL account uses different credentials.
+4. If MySQL uses a port other than 3306, change the port in db.url.
+5. The application creates its tables automatically when it starts.
+
+STEP 3 - OPEN THE JAVA PROJECT
+1. Extract CodeCrafters-main-UPDATED.zip.
+2. Open IntelliJ IDEA.
+3. Select File > Open.
+4. Select the extracted CodeCrafters-main folder (the folder containing pom.xml).
+5. Choose to open it as a Maven project if IntelliJ asks.
+6. Wait for Maven to download the dependencies.
+
+STEP 4 - RUN THE PROGRAMME
+Option A - IntelliJ:
+1. Open src/main/java/com/codecrafters/babyshop/App.java.
+2. Click the green Run icon beside the main method or class.
+3. If prompted, choose App.
+
+Option B - Maven:
+1. Open the IntelliJ Maven panel.
+2. Expand Plugins > javafx.
+3. Double-click javafx:run.
+
+STEP 5 - USE THE APPLICATION
+1. The Login/Register window should open.
+2. Choose Register and create a new account.
+3. Return to Login and sign in.
+4. Try the Inventory, Transactions and Salaries tabs.
+5. In the Transactions tab, click Export CSV Report and choose where to save the file.
+
+TROUBLESHOOTING
+- "Cannot connect to database": confirm the MySQL service is running.
+- "Access denied": correct the username/password in db.properties.
+- "Communications link failure": check the MySQL port and that the server is listening on localhost.
+- Maven dependency errors: check the internet connection and reload the Maven project.
+- JavaFX runtime errors: use JDK 17+ and run through the Maven javafx:run goal or IntelliJ's Maven plugin.
+
+IMPORTANT
+This is a JavaFX desktop application connected to MySQL. WAMP is used here only to provide the database service; Apache/PHP is not needed to run this Java application.

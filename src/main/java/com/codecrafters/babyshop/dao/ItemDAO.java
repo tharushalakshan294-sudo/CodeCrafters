@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemDAO {
+public class ItemDAO implements Repository<Item> {
 
     public List<Item> findAll() throws SQLException {
         List<Item> list = new ArrayList<>();
@@ -26,11 +26,11 @@ public class ItemDAO {
         try (Connection c = DBConnection.get();
              PreparedStatement ps = c.prepareStatement(
                      "INSERT INTO item (code, name, size, qty, price) VALUES (?,?,?,?,?)")) {
-            ps.setString(1, i.code);
-            ps.setString(2, i.name);
-            ps.setString(3, i.size);
-            ps.setInt(4, i.qty);
-            ps.setDouble(5, i.price);
+            ps.setString(1, i.getCode());
+            ps.setString(2, i.getName());
+            ps.setString(3, i.getSize());
+            ps.setInt(4, i.getQty());
+            ps.setDouble(5, i.getPrice());
             ps.executeUpdate();
         }
     }

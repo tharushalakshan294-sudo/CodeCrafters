@@ -6,6 +6,12 @@ import com.codecrafters.babyshop.dao.TransactionDAO;
 import com.codecrafters.babyshop.model.Employee;
 import com.codecrafters.babyshop.model.Item;
 import com.codecrafters.babyshop.model.Txn;
+import com.codecrafters.babyshop.service.InventoryService;
+import com.codecrafters.babyshop.exception.InsufficientStockException;
+import com.codecrafters.babyshop.util.CsvExporter;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.nio.file.Path;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +25,7 @@ public class MainController {
     private final ItemDAO itemDAO = new ItemDAO();
     private final TransactionDAO txnDAO = new TransactionDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
+    private final InventoryService inventoryService = new InventoryService();
 
     private final ObservableList<Item> items = FXCollections.observableArrayList();
     private final ObservableList<Txn> txns = FXCollections.observableArrayList();
@@ -48,27 +55,27 @@ public class MainController {
     @FXML
     public void initialize() {
         // Inventory table
-        invCodeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().code));
-        invNameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().name));
-        invSizeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().size));
-        invQtyCol.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().qty)));
-        invPriceCol.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().price)));
+        invCodeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCode()));
+        invNameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
+        invSizeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSize()));
+        invQtyCol.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getQty())));
+        invPriceCol.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().getPrice())));
         inventoryTable.setItems(items);
 
         // Transaction table
         trTypeBox.setItems(FXCollections.observableArrayList("Income", "Expense"));
         trTypeBox.getSelectionModel().selectFirst();
-        trDateCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().date));
-        trDescCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().desc));
-        trTypeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().type));
-        trAmountCol.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().amount)));
+        trDateCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDate()));
+        trDescCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDesc()));
+        trTypeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getType()));
+        trAmountCol.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().getAmount())));
         transactionTable.setItems(txns);
 
         // Salary table
-        salNameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().name));
-        salRoleCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().role));
-        salAmountCol.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().salary)));
-        salStatusCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().paid ? "Paid" : "Pending"));
+        salNameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
+        salRoleCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEmployeeRole()));
+        salAmountCol.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().getSalary())));
+        salStatusCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().isPaid() ? "Paid" : "Pending"));
         salaryTable.setItems(employees);
 
         loadAllData();
@@ -103,6 +110,8 @@ public class MainController {
             alert("Quantity and price must be valid numbers.");
         } catch (SQLIntegrityConstraintViolationException e) {
             alert("An item with that code already exists.");
+        } catch (IllegalArgumentException e) {
+            alert(e.getMessage());
         } catch (SQLException e) {
             dbError(e);
         }
@@ -116,15 +125,16 @@ public class MainController {
         if (selected == null) { alert("Select an item first."); return; }
         try {
             int amount = Integer.parseInt(qtyField.getText().trim());
-            int newQty = selected.qty + sign * amount;
-            if (newQty < 0) { alert("Not enough stock."); return; }
-            itemDAO.updateQty(selected.code, newQty);
-            selected.qty = newQty;
+            int newQty = inventoryService.calculateNewQuantity(selected, amount, sign > 0);
+            itemDAO.updateQty(selected.getCode(), newQty);
+            selected.setQty(newQty);
             qtyField.clear();
             inventoryTable.refresh();
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Enter a valid quantity.");
+        } catch (InsufficientStockException | IllegalArgumentException e) {
+            alert(e.getMessage());
         } catch (SQLException e) {
             dbError(e);
         }
@@ -135,7 +145,7 @@ public class MainController {
         Item selected = inventoryTable.getSelectionModel().getSelectedItem();
         if (selected == null) { alert("Select an item first."); return; }
         try {
-            itemDAO.delete(selected.code);
+            itemDAO.delete(selected.getCode());
             items.remove(selected);
             refreshDashboard();
         } catch (SQLException e) {
@@ -155,8 +165,26 @@ public class MainController {
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Amount must be a valid number.");
+        } catch (IllegalArgumentException e) {
+            alert(e.getMessage());
         } catch (SQLException e) {
             dbError(e);
+        }
+    }
+
+    @FXML
+    private void onExportTransactions() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Export transaction report");
+        chooser.setInitialFileName("babyshop-transactions.csv");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files", "*.csv"));
+        File file = chooser.showSaveDialog(transactionTable.getScene().getWindow());
+        if (file == null) return;
+        try {
+            new CsvExporter().exportTransactions(txns, Path.of(file.toURI()));
+            new Alert(Alert.AlertType.INFORMATION, "Transaction report exported successfully.").showAndWait();
+        } catch (java.io.IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Could not export report: " + e.getMessage()).showAndWait();
         }
     }
 
@@ -172,6 +200,8 @@ public class MainController {
             refreshDashboard();
         } catch (NumberFormatException e) {
             alert("Salary must be a valid number.");
+        } catch (IllegalArgumentException e) {
+            alert(e.getMessage());
         } catch (SQLException e) {
             dbError(e);
         }
@@ -181,10 +211,10 @@ public class MainController {
     private void onPaySalary() {
         Employee e = salaryTable.getSelectionModel().getSelectedItem();
         if (e == null) { alert("Select an employee first."); return; }
-        if (e.paid) { alert(e.name + " is already paid."); return; }
+        if (e.isPaid()) { alert(e.getName() + " is already paid."); return; }
         try {
             Txn expense = employeeDAO.paySalary(e);   // marks paid + records expense atomically
-            e.paid = true;
+            e.setPaid(true);
             txns.add(0, expense);
             salaryTable.refresh();
             refreshDashboard();
@@ -195,18 +225,18 @@ public class MainController {
 
     // ================= Dashboard =================
     private void refreshDashboard() {
-        totalItemsLabel.setText(String.valueOf(items.stream().mapToInt(i -> i.qty).sum()));
+        totalItemsLabel.setText(String.valueOf(items.stream().mapToInt(i -> i.getQty()).sum()));
 
         lowStockList.getItems().clear();
-        items.stream().filter(i -> i.qty < 10)
-                .forEach(i -> lowStockList.getItems().add(i.name + " (" + i.size + ") - only " + i.qty + " left"));
+        items.stream().filter(i -> i.getQty() < 10)
+                .forEach(i -> lowStockList.getItems().add(i.getName() + " (" + i.getSize() + ") - only " + i.getQty() + " left"));
         lowStockLabel.setText(String.valueOf(lowStockList.getItems().size()));
 
         double balance = 0;
-        for (Txn t : txns) balance += t.type.equals("Income") ? t.amount : -t.amount;
+        for (Txn t : txns) balance += t.getType().equals("Income") ? t.getAmount() : -t.getAmount();
         balanceLabel.setText(String.format("%.2f", balance));
 
-        double pending = employees.stream().filter(e -> !e.paid).mapToDouble(e -> e.salary).sum();
+        double pending = employees.stream().filter(e -> !e.isPaid()).mapToDouble(e -> e.getSalary()).sum();
         pendingSalaryLabel.setText(String.format("%.2f", pending));
     }
 

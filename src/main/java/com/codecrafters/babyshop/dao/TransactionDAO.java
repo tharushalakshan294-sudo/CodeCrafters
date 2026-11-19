@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionDAO {
+public class TransactionDAO implements Repository<Txn> {
 
     public List<Txn> findAll() throws SQLException {
         List<Txn> list = new ArrayList<>();
@@ -24,6 +24,7 @@ public class TransactionDAO {
 
     /** Inserts the transaction and returns it with its generated id. */
     public Txn insert(String desc, String type, double amount) throws SQLException {
+        if (amount < 0) throw new IllegalArgumentException("Amount cannot be negative.");
         Date today = new Date(System.currentTimeMillis());
         try (Connection c = DBConnection.get();
              PreparedStatement ps = c.prepareStatement(

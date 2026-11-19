@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeDAO {
+public class EmployeeDAO implements Repository<Employee> {
 
     public List<Employee> findAll() throws SQLException {
         List<Employee> list = new ArrayList<>();
@@ -24,6 +24,7 @@ public class EmployeeDAO {
     }
 
     public Employee insert(String name, String role, double salary) throws SQLException {
+        if (salary < 0) throw new IllegalArgumentException("Salary cannot be negative.");
         try (Connection c = DBConnection.get();
              PreparedStatement ps = c.prepareStatement(
                      "INSERT INTO employee (name, role, salary, paid) VALUES (?,?,?,FALSE)",
@@ -49,18 +50,18 @@ public class EmployeeDAO {
             c.setAutoCommit(false);
             try {
                 try (PreparedStatement ps = c.prepareStatement("UPDATE employee SET paid=TRUE WHERE id=?")) {
-                    ps.setInt(1, e.id);
+                    ps.setInt(1, e.getId());
                     ps.executeUpdate();
                 }
                 int txnId;
-                String desc = "Salary - " + e.name;
+                String desc = "Salary - " + e.getName();
                 try (PreparedStatement ps = c.prepareStatement(
                         "INSERT INTO transactions (date, description, type, amount) VALUES (?,?,?,?)",
                         Statement.RETURN_GENERATED_KEYS)) {
                     ps.setDate(1, today);
                     ps.setString(2, desc);
                     ps.setString(3, "Expense");
-                    ps.setDouble(4, e.salary);
+                    ps.setDouble(4, e.getSalary());
                     ps.executeUpdate();
                     try (ResultSet keys = ps.getGeneratedKeys()) {
                         keys.next();
@@ -68,7 +69,7 @@ public class EmployeeDAO {
                     }
                 }
                 c.commit();
-                return new Txn(txnId, today.toString(), desc, "Expense", e.salary);
+                return new Txn(txnId, today.toString(), desc, "Expense", e.getSalary());
             } catch (SQLException ex) {
                 c.rollback();
                 throw ex;

@@ -96,7 +96,7 @@
                                 <TextField fx:id="trDescField" promptText="Description" prefWidth="260"/>
                                 <ComboBox fx:id="trTypeBox" prefWidth="120"/>
                                 <TextField fx:id="trAmountField" promptText="Amount (Rs.)" prefWidth="130"/>
-                                <Button text="Add Transaction" styleClass="accent" onAction="#onAddTransaction"/>
+                                <Button text="Add Transaction" styleClass="accent" onAction="#onAddTransaction"/><Button text="Export CSV Report" onAction="#onExportTransactions"/>
                             </HBox>
                             <TableView fx:id="transactionTable" VBox.vgrow="ALWAYS">
                                 <columns>

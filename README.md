@@ -409,11 +409,8 @@ Add CSV export for monthly sales report
 ## 📄 Documentation
 
 - 📘 [Software Requirements Specification (SRS)](docs/SRS_Document.pdf)
-- 📐 UML Class Diagram: [Class diagram](docs/diagrams/Class%20diagram)
-- 👤 Use Case Diagram: [Use case diagram](docs/diagrams/Use%20case%20diagram)
-- 🔄 Activity Diagrams: [Activity diagram](docs/diagrams/Activity%20diagram)
-- 🔁 Sequence Diagrams: [Sequence diagram](docs/diagrams/Sequence%20diagram)
-- 🗂️ ER Diagram: [Er-diagram.png](docs/diagrams/Er-diagram.png)
+- 📐 UML Class Diagram: `docs/` *(to be added)*
+- 🗂️ ER Diagram: `docs/` *(to be added)*
 
 ---
 
@@ -447,3 +444,28 @@ Add CSV export for monthly sales report
 
 <p align="center">Made with ☕ and Java by <b>Team CodeCrafters</b></p>
 
+
+
+## Updated OOP implementation
+
+The code now includes:
+- Encapsulation in `Item`, `Employee` and `Txn` using private fields and controlled accessors.
+- Abstraction and inheritance through abstract `Person`, with `Employee` and `Customer` subclasses.
+- Runtime polymorphism through `PricingStrategy`, `RetailPricing` and `WholesalePricing`.
+- Method overloading in `PricingCalculator.calculate(...)`.
+- Generic interface `Repository<T>`, implemented by the item, employee and transaction DAO classes.
+- A custom checked exception hierarchy for stock validation.
+- Collections (`ObservableList`, `ArrayList`, streams) and CSV file export using try-with-resources.
+
+## Run on Windows (IntelliJ IDEA)
+
+1. Install JDK 17 or newer.
+2. Install MySQL Server and start the MySQL service.
+3. Open MySQL Workbench or phpMyAdmin and create a database named `babyshop` (or keep `createDatabaseIfNotExist=true` in the JDBC URL).
+4. Open this folder in IntelliJ IDEA as a Maven project and wait for dependencies to download.
+5. Open `src/main/resources/db.properties` and set the correct MySQL username and password.
+6. Run `src/main/java/com/codecrafters/babyshop/App.java`, or open the IntelliJ Maven tool window and run `Plugins > javafx > javafx:run`.
+7. Register a new account on the first screen, then log in.
+8. Use Inventory, Transactions and Salaries tabs. In Transactions, select **Export CSV Report** to save a CSV file.
+
+If the database connection fails, check that MySQL is running, port 3306 is available, and the credentials in `db.properties` are correct.
