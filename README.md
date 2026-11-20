@@ -2,7 +2,7 @@
 
 > A JavaFX + MySQL desktop application that manages inventory, income/expenses and employee salaries for a children's clothing shop in Maharagama, Sri Lanka.
 
-**Team CodeCrafters** | IIC 1153 – Object Oriented Programming | Group Assignment  
+**Team CodeCrafters** |  Object Oriented Programming | Group Assignment  
 Faculty of Technology, University of Sri Jayewardenepura  
 Bachelor of Information and Communication Technology Honours Degree – First Year, Second Semester
 
@@ -421,17 +421,6 @@ All diagrams are in [`docs/diagrams/`](docs/diagrams/):
 
 - **Mr. Amila Buddika**, the client, for his time and valuable input during the requirement-gathering interview
 - Lecturers and instructors of **IIC 1153 – Object Oriented Programming**, Faculty of Technology, University of Sri Jayewardenepura
-- [AtlantaFX](https://github.com/mkpaz/atlantafx) for the JavaFX theme
-
----
-
-## 📬 Submission
-
-- **Course:** IIC 1153 – Object Oriented Programming
-- **Deadline:** 19 November 2026
-- **Code:** `GA_Codes_<GroupNo>.zip`
-- **Presentation:** `GA_<GroupNo>.pptx`
-
----
+- [AtlantaFX](https://github.com/mkpaz/atlantafx) for the JavaFX 
 
 <p align="center">Made with ☕ and Java by <b>Team CodeCrafters</b></p>
