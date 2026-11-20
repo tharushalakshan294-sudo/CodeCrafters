@@ -400,7 +400,10 @@ All diagrams are in [`docs/diagrams/`](docs/diagrams/):
 - ⏱️ Sequence diagrams: `Sequence diagram/` (Create Sale, Receive Stock, Monthly Salary)
 - 🪟 Windows setup guide: [`RUN_GUIDE_WINDOWS.txt`](RUN_GUIDE_WINDOWS.txt)
 
-> The Software Requirements Specification (SRS) is not included in this repository yet. Add it to `docs/` and link it here.
+## 📄 Documentation
+
+- [Software Requirements Specification (SRS)](docs/diagrams/SRS%20Document.pdf)
+
 
 ---
 
